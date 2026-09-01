@@ -1,0 +1,13 @@
+# Host-side tooling for Presto development. Nothing here runs on the device -
+# the Presto runs MicroPython, and its libraries are baked into the firmware.
+
+mpremote==1.29.0          # copy files to / run a REPL on the board over USB
+pyserial==3.5             # pc/simhub_bridge.py, and mpremote's transport
+ruff==0.16.5              # lint + format (the noqa codes in device/ are ruff's)
+pytest==8.4.2             # test runner, and discovery across projects
+
+# Type stubs for the MicroPython standard library as built for the RP2350 +
+# CYW43 (the Presto's SoC and WiFi chip). The Presto-specific modules -
+# presto, picographics, picovector, ezwifi, touch - are not on PyPI; hand
+# written stubs for those live in typings/.
+micropython-rp2-rpi_pico2_w-stubs==1.29.0.post1

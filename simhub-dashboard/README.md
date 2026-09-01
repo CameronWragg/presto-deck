@@ -86,7 +86,7 @@ firmware.
 | [device/demo.py](device/demo.py)           | synthetic car for the idle demo                   |
 | [pc/simhub_bridge.py](pc/simhub_bridge.py) | virtual COM port → device                         |
 | [pc/fake_sim.py](pc/fake_sim.py)           | fake telemetry sender for testing                 |
-| [tests/test_telemetry.py](tests/test_telemetry.py) | `python3 tests/test_telemetry.py`         |
+| [tests/test_telemetry.py](tests/test_telemetry.py) | `pytest tests`                            |
 
 ## Things worth knowing
 

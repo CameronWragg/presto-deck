@@ -1,0 +1,60 @@
+{
+  "name": "presto-deck",
+  "build": {
+    "dockerfile": "Dockerfile",
+    // Repo root, so the Dockerfile can COPY requirements-dev.txt.
+    "context": "..",
+    "args": {
+      // GID of the host group that owns /dev/ttyACM* - `ls -l /dev/ttyACM0`,
+      // or `getent group uucp dialout`. Arch: uucp (984). Debian/Ubuntu and
+      // most others: dialout (20). Rebuild the container after changing it.
+      "SERIAL_GID": "984"
+    }
+  },
+
+  // The Presto is a USB serial device that disappears and reappears every
+  // time it resets or is put into bootloader mode, so bind the whole of /dev
+  // rather than a --device that has to exist at container-create time.
+  // Linux hosts only: on macOS/Windows, Docker has no USB passthrough - run
+  // mpremote on the host and use the container for tests, lint and pc/.
+  "runArgs": ["--privileged"],
+  "mounts": ["type=bind,source=/dev,target=/dev"],
+
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "charliermarsh.ruff",
+        "tamasfe.even-better-toml"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        // Hand-written stubs for the firmware's built-in modules.
+        "python.analysis.stubPath": "typings",
+        // device/ modules import each other flat, the way they sit on the
+        // board's filesystem root, so that directory has to be on the path.
+        "python.analysis.extraPaths": ["simhub-dashboard/device"],
+        "python.analysis.typeCheckingMode": "basic",
+        // pytest, not unittest: unittest refuses to walk from the repo root
+        // down to a tests/ directory unless every directory on the way is an
+        // importable package, which rules out "simhub-dashboard".
+        "python.testing.pytestEnabled": true,
+        "python.testing.unittestEnabled": false,
+        "python.testing.pytestArgs": ["."],
+        // Import sorting on save is a no-op against the current tree (see the
+        // isort config in pyproject.toml); `ruff format` is deliberately not
+        // wired to save, as device/ hand-groups some argument lists.
+        "[python]": {
+          "editor.defaultFormatter": "charliermarsh.ruff",
+          "editor.codeActionsOnSave": { "source.organizeImports": "explicit" }
+        },
+        "files.associations": { "*.af": "binary" }
+      }
+    }
+  },
+
+  "remoteUser": "vscode"
+}

@@ -1,0 +1,52 @@
+# Host-side tooling config. There is no package here to build: device/ is
+# copied onto the Presto's filesystem as-is, and pc/ is a couple of scripts.
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"   # device code also has to parse under MicroPython
+extend-exclude = ["typings"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "BLE", "SIM", "ARG", "RUF"]
+ignore = [
+    # The device is MicroPython, where the pythonic answer is often the
+    # expensive one:
+    "UP032",   # "{}".format() over f-strings - f-strings cost RAM per call site
+    "SIM105",  # try/except/pass over contextlib.suppress - no contextlib in firmware
+    # ruff exempts imports that follow a sys.path fixup from E402; the noqa
+    # comment on pc/fake_sim.py's import is for anything else that reads the
+    # code.
+    "RUF100",
+]
+
+[tool.ruff.lint.isort]
+# device/ modules live flat in the board's filesystem root and import each
+# other by bare name, so they are this project's first-party code.
+known-first-party = ["config", "dashboard", "demo", "netlink", "telemetry"]
+# Built into the MicroPython firmware, not third-party packages.
+extra-standard-library = ["micropython"]
+
+[tool.pytest.ini_options]
+# unittest cannot discover from the repo root: it insists every directory down
+# to the tests be an importable package, and "simhub-dashboard" is a hyphen
+# away from being a legal module name. pytest finds every project's tests.
+testpaths = ["."]
+python_files = ["test_*.py"]
+# importlib rather than the default prepend, so two projects can each have a
+# tests/test_telemetry.py without colliding on the module name.
+addopts = "--import-mode=importlib"
+
+[tool.pyright]
+# device/ is written for MicroPython; the stubs in typings/ describe the
+# firmware's built-in modules, and micropython-rp2-rpi_pico2_w-stubs covers
+# the standard library as built for the RP2350.
+include = ["simhub-dashboard"]
+stubPath = "typings"
+extraPaths = ["simhub-dashboard/device"]
+typeCheckingMode = "basic"
+reportMissingModuleSource = "none"
+# A `= None` placeholder that is assigned for real before anything reads it
+# still reads as Optional forever - all five current hits are that pattern
+# (the sockets in pc/, main.py's lazily built demo state), not a live None.
+# Kept visible, but as a warning rather than an error.
+reportOptionalMemberAccess = "warning"
