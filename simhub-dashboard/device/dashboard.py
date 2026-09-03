@@ -17,6 +17,7 @@ class TextRenderer:
     def __init__(self, display, font_path=None):
         self.display = display
         self.vector = None
+        self.transform = None
         self._cell_cache = {}
         self._wrap = display.get_bounds()[0]
         display.set_font("bitmap8")
@@ -29,7 +30,15 @@ class TextRenderer:
 
             vector = PicoVector(self.display)
             vector.set_antialiasing(ANTIALIAS_X4)
-            vector.set_transform(Transform())
+            # PicoVector keeps only a raw pointer to the transform, so the
+            # object has to outlive this call. Passing Transform() inline
+            # leaves it unreferenced, and once the GC takes it PicoVector
+            # reads freed memory - which shows up as text drawing that
+            # intermittently hangs the board or corrupts unrelated objects,
+            # not as an error here. Every Presto example binds it to a name;
+            # so do we.
+            self.transform = Transform()
+            vector.set_transform(self.transform)
             vector.set_font(font_path, 24)
             self.vector = vector
         except Exception:  # noqa: BLE001 - no font on device, bitmap is fine

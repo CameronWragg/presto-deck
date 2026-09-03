@@ -22,7 +22,10 @@ ignore = [
 [tool.ruff.lint.isort]
 # device/ modules live flat in the board's filesystem root and import each
 # other by bare name, so they are this project's first-party code.
-known-first-party = ["config", "dashboard", "demo", "netlink", "telemetry"]
+known-first-party = [
+    "config", "dashboard", "demo", "netlink", "telemetry",   # simhub-dashboard
+    "flights", "geo", "netapi", "radar",                     # flight-tracker
+]
 # Built into the MicroPython firmware, not third-party packages.
 extra-standard-library = ["micropython"]
 
@@ -40,13 +43,25 @@ addopts = "--import-mode=importlib"
 # device/ is written for MicroPython; the stubs in typings/ describe the
 # firmware's built-in modules, and micropython-rp2-rpi_pico2_w-stubs covers
 # the standard library as built for the RP2350.
-include = ["simhub-dashboard"]
+include = ["simhub-dashboard", "flight-tracker"]
 stubPath = "typings"
-extraPaths = ["simhub-dashboard/device"]
 typeCheckingMode = "basic"
 reportMissingModuleSource = "none"
 # A `= None` placeholder that is assigned for real before anything reads it
-# still reads as Optional forever - all five current hits are that pattern
-# (the sockets in pc/, main.py's lazily built demo state), not a live None.
-# Kept visible, but as a warning rather than an error.
+# still reads as Optional forever - every current hit is that pattern (the
+# sockets in pc/, the lazily built demo state in both main.py files), not a
+# live None. Kept visible, but as a warning rather than an error.
 reportOptionalMemberAccess = "warning"
+
+# Each project's device/ modules sit flat on the board and import each other
+# by bare name, and different projects reuse those names - there is a
+# config.py and a demo.py in both. A single extraPaths would resolve every
+# bare import to whichever project came first, so each project gets its own
+# search path instead.
+[[tool.pyright.executionEnvironments]]
+root = "simhub-dashboard"
+extraPaths = ["simhub-dashboard/device"]
+
+[[tool.pyright.executionEnvironments]]
+root = "flight-tracker"
+extraPaths = ["flight-tracker/device"]

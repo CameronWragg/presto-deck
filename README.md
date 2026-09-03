@@ -6,9 +6,10 @@ RP2350.
 
 ## Projects
 
-| Project                                      | What it does                                                            |
-| -------------------------------------------- | ----------------------------------------------------------------------- |
-| [simhub-dashboard](simhub-dashboard/)        | Sim racing dashboard: speed, RPM, gear and shift lights fed from SimHub over local WiFi. |
+| Project                                 | What it does                                                                                |
+| --------------------------------------- | ------------------------------------------------------------------------------------------- |
+| [simhub-dashboard](simhub-dashboard/)   | Sim racing dashboard: speed, RPM, gear and shift lights fed from SimHub over local WiFi.      |
+| [flight-tracker](flight-tracker/)       | Radar scope of the aircraft overhead, from the OpenSky Network's ADS-B feed.                   |
 
 Each project is self-contained: a `device/` directory to copy onto the Presto,
 plus whatever host-side tooling and docs it needs. Run its commands from inside
