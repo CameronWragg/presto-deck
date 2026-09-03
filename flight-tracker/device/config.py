@@ -110,8 +110,9 @@ MAX_AIRCRAFT = 40
 DISTANCE_UNITS = "nm"
 
 # Tint the 7 ambient LEDs with the closest aircraft's altitude colour,
-# brightening as it gets nearer.
-AMBIENT_LEDS = True
+# brightening as it gets nearer, so the unit glows when something passes
+# overhead. Off by default - it is a lot of light for a shelf in a dark room.
+AMBIENT_LEDS = False
 
 # Fly synthetic traffic when the feed cannot be reached - no API access yet,
 # no WiFi, or an outage. The real feed is still retried in the background and

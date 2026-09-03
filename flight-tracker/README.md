@@ -27,9 +27,10 @@ your own position, with the closest one written out along the bottom.
 
 Positions come from the [OpenSky Network](https://openskynetwork.github.io/opensky-api/),
 a community ADS-B feed run by a non-profit research consortium. It needs no
-account to get started. The 7 ambient LEDs glow with the closest aircraft's
-altitude colour and brighten as it gets nearer, so the unit lights up when
-something passes overhead.
+account to get started. Set `AMBIENT_LEDS = True` and the 7 ambient LEDs glow
+with the closest aircraft's altitude colour, brightening as it gets nearer, so
+the unit lights up when something passes overhead - off by default, because it
+is a lot of light for a shelf in a dark room.
 
 ## Credits, and how often it can poll
 

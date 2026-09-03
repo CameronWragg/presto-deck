@@ -297,6 +297,12 @@ def main():
     time.sleep(1)
 
     leds = None
+    if not config.AMBIENT_LEDS:
+        # Nothing switches them off later, so a board that ran with them
+        # enabled would otherwise keep whatever colour it last showed.
+        for index in range(LED_COUNT):
+            presto.set_led_rgb(index, 0, 0, 0)
+
     was_touched = False
     last_frame = time.ticks_ms()
 
